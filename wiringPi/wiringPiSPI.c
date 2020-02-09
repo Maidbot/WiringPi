@@ -92,6 +92,24 @@ int wiringPiSPIDataRW (int channel, unsigned char *data, int len)
   return ioctl (spiFds [channel], SPI_IOC_MESSAGE(1), &spi) ;
 }
 
+int wiringPiSPIDataRWSep    (int channel, unsigned char *txData, unsigned char *rxData, int len) 
+{
+  struct spi_ioc_transfer spi ;
+
+  channel &= 1 ;
+
+  memset (&spi, 0, sizeof (spi)) ;
+
+  spi.tx_buf        = (unsigned long)txData ;
+  spi.rx_buf        = (unsigned long)rxData ;
+  spi.len           = len ;
+  spi.delay_usecs   = spiDelay ;
+  spi.speed_hz      = spiSpeeds [channel] ;
+  spi.bits_per_word = spiBPW ;
+
+  return ioctl (spiFds [channel], SPI_IOC_MESSAGE(1), &spi) ;
+}
+
 
 /*
  * wiringPiSPISetupMode:
